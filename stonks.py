@@ -76,8 +76,8 @@ import statsmodels.formula.api as sm
 from pandas import tseries
 
 # I got these separately
-aapl = quandl.get("WIKI/AAPL", start_date="2006-11-01", end_date="2018-08-07", paginate=True)
-msft = quandl.get("WIKI/MSFT", start_date="2006-11-01", end_date="2018-08-07", paginate=True)
+aapl = quandl.get("WIKI/AAPL", start_date="2006-11-01", end_date="2012-08-04", paginate=True)
+msft = quandl.get("WIKI/MSFT", start_date="2006-11-01", end_date="2012-08-04", paginate=True)
 
 aapl_adj_close = aapl['Adj. Close']
 msft_adj_close = msft['Adj. Close']
@@ -90,5 +90,26 @@ df = pd.DataFrame({'AAPL': aapl_returns, 'MSFT': msft_returns})
 
 model = sm.ols(formula="AAPL ~ MSFT", data=df).fit()
 
-print(model.params)
+# print(model.params)
+# print(model.summary())
+
+plt.plot(aapl_returns, msft_returns, 'r.')
+
+# add axis
+ax = plt.axis()
+
+# initialize `x`
+x = np.linspace(ax[0], ax[1] + 0.01)
+
+#PLOT THE REGRESSION
+plt.plot(x, model.params[0] + model.params[1] * x, 'b', lw=2)
+
+# Customize the plot
+plt.grid(True)
+plt.axis('tight')
+plt.xlabel('Apple Returns')
+plt.ylabel('Microsoft returns')
+
+# Show the plot
 print(model.summary())
+plt.show()
