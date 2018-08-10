@@ -20,11 +20,11 @@ quandl.ApiConfig.api_key = '4aMNMqjBPzy7zzuaKFnB'
 
 aapl = quandl.get("WIKI/AAPL", start_date="2006-10-01", end_date="2014-01-01", paginate=True)
 
-print(aapl['Close'])
+# print(aapl['Close'])
 
 # define short and long windows
-short_window = 40
-long_window = 100
+short_window = 20
+long_window = 150
 
 # initialize the dataframe
 signals = pd.DataFrame(index=aapl.index)
@@ -63,6 +63,7 @@ ax1.plot(signals.loc[signals.positions == -1.0].index, signals.long_mavg[signals
 '''
 '''
 Portfolio Testing
+'''
 '''
 initial_capital = float(100000.0)
 
@@ -107,4 +108,45 @@ ax1.plot(portfolio.loc[signals.positions == -1.0].index,
          'v', markersize=10, color='k')
 
 # Show the plot
+# plt.show()
+
+# calculate Sharpe Ratio
+returns = portfolio['returns']
+
+# The Sharpe ratio is the average return earned in excess of 
+# the risk-free rate per unit of volatility or total risk
+sharpe_ratio = np.sqrt(252) * (returns.mean() / returns.std())
+
+# print(sharpe_ratio)
+'''
+'''
+you can also calculate a Maximum Drawdown, which is used to measure
+the the largest single drop from peak to bottom in the value of a
+portfolio, so before a new peak is achieved. In other words,
+the score indicates the risk of a portfolio chosen based on a 
+certain strategy.
+'''
+'''
+# trailing 252 day window
+window = 252
+
+# max drawdown in window for each day
+rolling_max = aapl['Adj. Close'].rolling(window, min_periods=1).max()
+daily_drawdown = aapl['Adj. Close']/rolling_max - 1.0
+
+# min drawdown
+max_daily_drawdown = daily_drawdown.rolling(window, min_periods=1).max()
+
+daily_drawdown.plot()
+max_daily_drawdown.plot()
+
 plt.show()
+'''
+# Next up is the Compound Annual Growth Rate (CAGR), which provides you 
+# with a constant rate of return over the time period
+days = (aapl.index[-1] - aapl.index[0]).days
+
+# calc CAGR
+cagr = ((((aapl['Adj. Close'][-1] / aapl['Adj. Close'][1])) ** (365.0/days)) - 1)
+
+print(cagr)
